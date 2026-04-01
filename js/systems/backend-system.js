@@ -5,48 +5,38 @@ window.JA = window.JA || {};
  * Sistema de rankings para Jetpack Ascender V2
  */
 JA.backend = {
-  // Cache simple
-  _cache: {
-    ranking: null,
-    lastFetch: 0
-  },
+  MAX_RANKING_SIZE: 100,
 
   // ─────────────────────────────────────────────────────────────────
   // INICIALIZACIÓN DE FIREBASE
   // ─────────────────────────────────────────────────────────────────
 
   async init() {
-    if (window.firebase?.db) return; // Ya inicializado
+    // Si ya está inicializado, salir
+    if (window.firebase?.db) {
+      return;
+    }
 
     try {
       console.log('🔥 Inicializando Firebase...');
 
-      // Cargar Firebase SDK
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.textContent = `
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-        import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js';
-        
-        const firebaseConfig = ${JSON.stringify(JA.config.backend.firebase)};
-        const app = initializeApp(firebaseConfig);
-        window.firebase = { app, db: getDatabase(app) };
-        console.log('✓ Firebase inicializado');
-      `;
-      document.head.appendChild(script);
+      // Cargar Firebase App
+      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
+      const { getDatabase } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js');
 
-      // Esperar a que Firebase se inicialice
-      for (let i = 0; i < 50; i++) {
-        if (window.firebase?.db) {
-          await new Promise(r => setTimeout(r, 100));
-          console.log('✓ Base de datos lista');
-          return;
-        }
-        await new Promise(r => setTimeout(r, 100));
-      }
-      throw new Error('Firebase timeout');
+      const firebaseConfig = JA.config.backend.firebase;
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      // Guardar en window
+      window.firebase = { app, db };
+
+      console.log('✓ Firebase inicializado correctamente');
+      return db;
     } catch (error) {
       console.error('❌ Error inicializando Firebase:', error.message);
+      console.error('Usando fallback localStorage');
+      return null;
     }
   },
 
@@ -79,12 +69,16 @@ JA.backend = {
 
   async _getBin() {
     try {
+      // Intentar inicializar Firebase
       await JA.backend.init();
 
+      // Si no hay Firebase disponible, usar localStorage
       if (!window.firebase?.db) {
-        throw new Error('Firebase no disponible');
+        console.warn('⚠️ Firebase no disponible, usando localStorage');
+        return JA.storage.getLocalRanking();
       }
 
+      // Firebase está disponible, obtener datos
       const { ref, get } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js');
 
       const snapshot = await get(ref(window.firebase.db, 'ranking'));
@@ -98,49 +92,48 @@ JA.backend = {
       ranking = Array.isArray(ranking) ? ranking : [];
 
       if (!JA.backend._validateRankingArray(ranking)) {
-        console.warn('⚠️ Estructura de ranking inválida, usando fallback local');
+        console.warn('⚠️ Estructura de ranking inválida, usando localStorage');
         return JA.storage.getLocalRanking();
       }
 
-      JA.backend._cache.ranking = ranking;
-      JA.backend._cache.lastFetch = Date.now();
-
       return ranking;
     } catch (error) {
-      console.error('❌ Error en _getBin:', error.message);
-      if (JA.backend._cache.ranking) {
-        console.log('⚠️ Usando cache de ranking');
-        return JA.backend._cache.ranking;
-      }
-      throw error;
+      console.error('⚠️ Error en _getBin:', error.message);
+      console.log('Usando localStorage como fallback');
+      return JA.storage.getLocalRanking();
     }
   },
 
   async _putBin(ranking) {
     try {
       if (!JA.backend._validateRankingArray(ranking)) {
-        throw new Error('Datos de ranking inválidos antes de guardar');
+        // Si los datos son inválidos, guardar en localStorage
+        return JA.backend.saveScoreLocal(ranking[0]?.nombre || 'Unknown', ranking[0]?.metros || 0);
       }
 
       await JA.backend.init();
 
+      // Si Firebase no está disponible, guardar en localStorage
       if (!window.firebase?.db) {
-        throw new Error('Firebase no disponible');
+        console.warn('⚠️ Firebase no disponible, guardando en localStorage');
+        return JA.storage.saveLocalRanking(ranking);
       }
 
+      // Firebase está disponible, guardar datos
       const { ref, set } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js');
 
       const normalized = ranking.map(r => JA.backend._normalizeRankingRow(r));
-
       await set(ref(window.firebase.db, 'ranking'), normalized);
 
-      JA.backend._cache.ranking = normalized;
-      JA.backend._cache.lastFetch = Date.now();
-
       console.log('✓ Ranking guardado en Firebase');
+      return true;
     } catch (error) {
-      console.error('❌ Error en _putBin:', error.message);
-      throw error;
+      console.error('⚠️ Error en _putBin:', error.message);
+      console.log('Guardando en localStorage como fallback');
+      if (ranking && Array.isArray(ranking)) {
+        JA.storage.saveLocalRanking(ranking);
+      }
+      return true;
     }
   },
 
