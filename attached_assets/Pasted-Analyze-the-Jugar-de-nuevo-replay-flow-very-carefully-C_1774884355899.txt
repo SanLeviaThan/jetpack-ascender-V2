@@ -1,0 +1,43 @@
+Analyze the "Jugar de nuevo" / replay flow very carefully.
+
+Current problem:
+Starting a new run from the "Jugar de nuevo" button now loads correctly and the game begins in a clean state.
+However, after playing for a short time (for example after killing 2 or 3 enemies while going upward), the game freezes completely.
+The music continues playing, but the gameplay becomes stuck and the HUD disappears or stops updating.
+
+Task:
+Fix ONLY the crash/freeze that happens after starting a new run from the replay button.
+
+What must be investigated:
+- Whether the replay flow leaves duplicated event listeners, timers, callbacks, physics objects, enemy references, or UI/HUD bindings from the previous run
+- Whether some object is being destroyed twice or referenced after destruction
+- Whether the HUD or gameplay scene is being recreated incorrectly after replay
+- Whether enemy death, score update, world cleanup, or upward progression triggers invalid state after replay
+- Whether there are stale references from the previous session that survive into the new run
+
+Requirements:
+- The replay button must start a fully clean new run
+- After replay, gameplay must remain stable even after killing enemies, climbing, updating score, and updating the HUD
+- Do not allow hidden leftovers from the previous run to break the new one
+- Keep the current working startup/loading fix exactly as it is
+- Keep the current one-click start protection exactly as it is
+- Make the minimum necessary change to solve the freeze
+
+Strict rules:
+- Modify ONLY the code related to replay/restart flow, cleanup, state reset, scene re-entry, HUD reinitialization, or stale references directly involved in this freeze
+- Do NOT change menu behavior, ranking logic, name validation, startup flow, asset loading, player controls, physics tuning, camera tuning, or unrelated systems
+- Do NOT refactor unrelated code
+- Do NOT replace entire files unless absolutely necessary
+- Preserve the current project structure and all current working behavior
+
+Before changing anything:
+- Identify exactly which file(s) and function(s) are used when the player presses "Jugar de nuevo"
+- Trace what is reset, what is recreated, and what survives from the previous run
+- Identify the most likely reason the freeze happens only after replay and only after some gameplay activity
+
+After the change, report:
+1. The exact file(s) modified
+2. The exact function(s) changed
+3. The root cause of the freeze
+4. How the replay flow was fixed
+5. Only the relevant code changes

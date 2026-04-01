@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Jetpack Ascender V2 — RoviSoft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260328c">
+</head>
+
+<body>
+  <div id="game-wrap">
+    <div id="game-container"></div>
+
+    <div id="hud">
+      <div id="hud-metros">⬆ 0 m</div>
+      <div id="hud-fuel">⚡ Fuel: 100%</div>
+      <div id="hud-vida">❤ Vida: 3</div>
+      <div id="hud-nivel">ATMÓSFERA</div>
+      <div id="hud-barbg"></div>
+      <div id="hud-bar"></div>
+    </div>
+
+    <div id="panel-inicio" class="panel" style="display:flex;">
+      <div class="panel-border"></div>
+      <div class="fila-titulo">
+        <div class="pj-wrap">
+          <div class="pj-body">
+            <div class="pj-visor"></div>
+            <div class="pj-pack"></div>
+          </div>
+          <div class="pj-botas">
+            <div class="pj-bota"></div>
+            <div class="pj-bota"></div>
+          </div>
+          <div class="pj-llama"></div>
+        </div>
+        <div class="bloque-titulo">
+          <div class="t1">JETPACK</div>
+          <div class="t2">ASCENDER</div>
+          <div class="t2b">— V2 —</div>
+          <div class="t3">▸ VERTICAL SURVIVAL GAME ◂</div>
+        </div>
+      </div>
+
+      <div class="s-form">
+        <label>— INGRESÁ TU NOMBRE —</label>
+        <input id="inicio-input" type="text" maxlength="12" placeholder="NOMBRE" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="fila-botones">
+        <button class="btn-jugar" id="inicio-btn">▶ &nbsp; JUGAR</button>
+        <div id="cargando-msg" style="display:none; color:#00ffcc; font-size:10px; margin-top:8px;">⚡ Conectando
+          ranking...</div>
+        <button class="btn-ranking" id="btn-ver-ranking">🏆 &nbsp; RANKING</button>
+      </div>
+      <div id="cargando-msg" style="display:none; color:#00ffcc; font-size:10px; margin-top:8px;">⚡ Conectando
+        ranking...</div>
+      <div class="creditos">Desarrollado por &nbsp;<em>RoviSoft</em> &nbsp;©2026</div>
+    </div>
+
+    <div id="panel-ranking">
+      <div class="panel-border"></div>
+      <h2>🏆 &nbsp; RANKING GLOBAL &nbsp; 🏆</h2>
+      <ol id="ranking-ol">
+        <li style="color:#1e2e44">Cargando...</li>
+      </ol>
+      <button class="btn-cerrar" id="btn-cerrar-ranking">✕ &nbsp; CERRAR</button>
+      <div class="creditos">RoviSoft ©2026</div>
+    </div>
+
+    <div id="panel-gameover" class="panel" style="display:none;">
+      <div class="panel-border"></div>
+      <div class="go-h2">— GAME OVER —</div>
+      <div class="go-metros" id="go-metros">0 m</div>
+      <div class="go-msg" id="go-msg"></div>
+      <button class="btn-go" id="go-reiniciar">▶ &nbsp; JUGAR DE NUEVO</button>
+      <button class="btn-volver" id="go-menu">↩ &nbsp; MENÚ PRINCIPAL</button>
+      <br>
+      <div class="rk-go">
+        <h3>⬡ &nbsp; RANKING GLOBAL &nbsp; ⬡</h3>
+        <ol id="go-ranking">
+          <li style="color:#1e2e44">Cargando...</li>
+        </ol>
+      </div>
+      <div class="creditos" style="margin-top:10px;">RoviSoft &nbsp;<em>©2026</em></div>
+    </div>
+
+    <div id="touch-controls">
+      <div class="touch-left">
+        <button class="touch-btn" id="btn-left">◀</button>
+        <button class="touch-btn" id="btn-right">▶</button>
+      </div>
+      <div class="touch-actions">
+        <button class="touch-btn big" id="btn-thrust">▲</button>
+        <button class="touch-btn" id="btn-shoot">✦</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <script src="js/core/config.js?v=20260328c"></script>
+  <script src="js/core/state.js?v=20260328c"></script>
+  <script src="js/data/layers.js?v=20260328c"></script>
+  <script src="js/systems/audio-system.js?v=20260328c"></script>
+  <script src="js/systems/storage-system.js?v=20260328c"></script>
+  <script src="js/systems/backend-system.js?v=20260328c"></script>
+  <script src="js/systems/input-system.js?v=20260328c"></script>
+  <script src="js/systems/hud-system.js?v=20260328c"></script>
+  <script src="js/entities/player.js?v=20260328c"></script>
+  <script src="js/entities/enemies.js?v=20260328c"></script>
+  <script src="js/entities/world-items.js?v=20260328c"></script>
+  <script src="js/systems/spawn-system.js?v=20260328c"></script>
+  <script src="js/scenes/boot-scene.js?v=20260328c"></script>
+  <script src="js/scenes/menu-scene.js?v=20260328c"></script>
+  <script src="js/scenes/game-scene.js?v=20260328c"></script>
+  <script src="js/systems/ui-system.js?v=20260328c"></script>
+  <script src="game.js?v=20260328c"></script>
+</body>
+
+</html>

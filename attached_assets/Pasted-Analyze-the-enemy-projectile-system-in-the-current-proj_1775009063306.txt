@@ -1,0 +1,37 @@
+Analyze the enemy projectile system in the current project.
+
+Current problem:
+Enemies are shooting, but their projectiles are not visually visible during gameplay.
+The player takes damage, so the projectile logic is working, but the projectile sprite is either missing, invisible, not assigned correctly, or moving too fast to be seen properly.
+
+Task:
+Fix ONLY the enemy projectile visuals and visibility.
+
+Requirements:
+- Make all enemy projectiles visible during gameplay
+- Use the correct existing projectile asset for each enemy type from the project files
+- Do not use generic placeholder shapes if a proper projectile asset already exists for that enemy
+- Ensure each enemy uses its own corresponding projectile sprite/asset
+- Reduce projectile speed if necessary so the projectile can be clearly seen by the player during gameplay
+- Keep projectile behavior functionally the same unless a small speed adjustment is necessary for visibility
+- Keep collision and damage working correctly
+
+Strict rules:
+- Modify ONLY the code directly related to enemy projectile rendering, projectile asset assignment, and projectile speed if needed
+- Do NOT change unrelated enemy logic, player logic, level generation, UI, HUD, ranking, menu flow, replay flow, walls, floor, camera, or other gameplay systems
+- Do NOT refactor unrelated code
+- Do NOT replace entire files unless absolutely necessary
+- Preserve the current project structure and existing gameplay
+
+Before making changes:
+- Identify which file(s) and function(s) control enemy projectile creation and rendering
+- Identify which projectile asset belongs to each enemy type
+- Check why the projectile is currently invisible (missing sprite, wrong frame, bad scale, alpha, depth, wrong texture key, or excessive speed)
+
+After the change, report:
+1. The exact file(s) modified
+2. The exact function(s) changed
+3. The root cause of why projectiles were invisible
+4. Which asset is now used for each enemy type
+5. Whether projectile speed was adjusted, and by how much
+6. Only the relevant code changes

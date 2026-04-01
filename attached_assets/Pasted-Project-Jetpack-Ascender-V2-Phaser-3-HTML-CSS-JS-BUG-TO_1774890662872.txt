@@ -1,0 +1,66 @@
+Project: Jetpack Ascender V2 (Phaser 3, HTML/CSS/JS)
+
+BUG TO FIX:
+The side wall PNGs now appear correctly on the first run, but after clicking "JUGAR DE NUEVO" / replay, the wall PNGs are no longer shown correctly and only the fallback graphics/HTML-looking wall rendering remains.
+
+IMPORTANT:
+This is a replay/restart lifecycle bug.
+Do NOT inspect the whole repo.
+Only inspect these files if needed:
+- js/entities/world-items.js
+- js/scenes/game-scene.js
+
+STRICT RULES:
+- Modify only what is strictly necessary
+- Do NOT refactor unrelated code
+- Do NOT optimize anything
+- Do NOT rename variables, functions, files, or structures
+- Do NOT touch platform generation
+- Do NOT touch drawPlatform()
+- Do NOT touch physics
+- Do NOT touch collisions
+- Do NOT touch camera behavior
+- Do NOT touch loading logic
+- Do NOT touch the JUGAR button logic
+- Do NOT replace full files unless absolutely necessary
+- Show only the minimal patch
+
+KNOWN FACTS:
+- boot-scene.js already loads:
+  - plat_pared_izquierda
+  - plat_pared_derecha
+- world-items.js already has drawWalls(scene)
+- First game run already works, so texture loading is NOT the main problem
+- The problem happens only after replay / restart
+
+LIKELY CAUSE:
+Stale wall references survive after replay/restart.
+Possible stale refs:
+- scene.wallLeftImg
+- scene.wallRightImg
+- scene.wallLeftSprite
+- scene.wallRightSprite
+- scene.wallGfx
+
+TASK:
+Fix only the side wall replay bug.
+
+Preferred fix:
+1) Make drawWalls(scene) robust against stale/destroyed/inactive wall references
+2) If necessary, clear/reset those wall references during the game restart/replay flow
+3) Keep PNG walls working both on first run and after clicking "JUGAR DE NUEVO"
+
+VERY IMPORTANT:
+If wall images were destroyed or became inactive, drawWalls(scene) must recreate them instead of silently keeping old broken references.
+
+DO NOT:
+- rewrite drawWalls completely unless absolutely necessary
+- add new systems
+- change unrelated scene flow
+
+RESPONSE FORMAT:
+1) File modified
+2) Function modified
+3) Exact reason
+4) Minimal patch only
+5) One short sentence explaining why the fix preserves existing gameplay

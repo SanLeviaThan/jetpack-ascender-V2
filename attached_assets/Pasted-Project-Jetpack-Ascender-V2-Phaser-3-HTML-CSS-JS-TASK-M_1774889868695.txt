@@ -1,0 +1,57 @@
+Project: Jetpack Ascender V2 (Phaser 3, HTML/CSS/JS)
+
+TASK:
+Make the side wall PNGs visible in-game.
+Only fix the wall rendering. Do not change anything else.
+
+VERY IMPORTANT RULES:
+- Modify only what is strictly necessary
+- Do NOT refactor unrelated code
+- Do NOT optimize anything
+- Do NOT rename variables, functions, files, or structures
+- Do NOT touch physics
+- Do NOT touch collisions
+- Do NOT touch platform generation logic
+- Do NOT touch camera behavior
+- Do NOT touch restart flow
+- Do NOT touch the JUGAR button logic
+- Do NOT touch loading logic
+- Do NOT replace full files unless absolutely necessary
+- Show only the minimal patch
+
+KNOWN FACTS:
+1) In js/scenes/boot-scene.js, these textures are already loaded correctly:
+- plat_pared_izquierda
+- plat_pared_derecha
+
+2) In js/entities/world-items.js, there is already a function called:
+- drawWalls(scene)
+
+Current drawWalls(scene) already handles:
+- creating wall images with plat_pared_izquierda / plat_pared_derecha
+- positioning them with camera scroll
+- resizing them with WALL
+So do NOT rewrite that function unless strictly necessary.
+
+3) The likely issue is that drawWalls(scene) is not being called in the active per-frame loop.
+
+WHAT TO DO:
+1) Inspect js/scenes/game-scene.js
+2) Find the main per-frame update loop (usually update())
+3) Check whether JA.worldItems.drawWalls(this); is being called every frame
+4) If it is missing, add exactly this call in the correct per-frame update location:
+   JA.worldItems.drawWalls(this);
+
+IMPORTANT:
+- If the call already exists, then inspect why walls are still not visible and apply the smallest possible fix only for wall visibility
+- Do NOT touch drawPlatform()
+- Do NOT touch platform spawning
+- Do NOT add new systems
+- Do NOT rewrite world-items.js unless absolutely required
+
+RESPONSE FORMAT:
+1) File modified
+2) Function modified
+3) Exact reason
+4) Minimal code patch only
+5) Short explanation of why this fixes the wall rendering without affecting gameplay

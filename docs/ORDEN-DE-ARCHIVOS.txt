@@ -1,0 +1,53 @@
+JETPACK ASCENDER V2 - MIGRACION BASE DESDE V1
+
+OBJETIVO DE ESTE ZIP
+- Dejar la V1 separada en archivos chicos.
+- Mantener jugabilidad tipo V1.
+- Agregar soporte touch/mobile.
+- Dejar hueco listo para sprites PNG del jugador.
+- Sacar dependencia obligatoria de Supabase y usar ranking local por defecto.
+
+ORDEN REAL DE CARGA
+1) js/core/config.js
+2) js/core/state.js
+3) js/data/layers.js
+4) js/systems/audio-system.js
+5) js/systems/storage-system.js
+6) js/systems/backend-system.js
+7) js/systems/input-system.js
+8) js/systems/hud-system.js
+9) js/entities/player.js
+10) js/entities/enemies.js
+11) js/entities/world-items.js
+12) js/systems/spawn-system.js
+13) js/scenes/boot-scene.js
+14) js/scenes/menu-scene.js
+15) js/scenes/game-scene.js
+16) js/systems/ui-system.js
+17) game.js
+
+BACKEND
+- Ahora queda en modo LOCAL por defecto.
+- Si mas adelante queres reactivar Supabase:
+  cambiar JA.config.backend.mode = 'supabase'
+  y completar URL + KEY.
+
+SPRITES DEL JUGADOR
+- Carpeta lista:
+  assets/player/idle/
+  assets/player/fly/
+  assets/player/shoot/
+  assets/player/hurt/
+- Por ahora el jugador se dibuja con Graphics como fallback.
+- Cuando pasemos PNG, se conecta desde boot-scene.js + entities/player.js.
+
+ENEMIGOS / PLATAFORMAS / MUSICA
+- Carpeta lista:
+  assets/enemies/
+  assets/platforms/
+  assets/music/
+
+IMPORTANTE
+- Este zip ya no es "estructura vacia": ya viene con la migracion base funcional.
+- Primero probalo asi.
+- Despues metemos sprites del jugador.

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test JSONBin - JetpackV2</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .log {
+            margin: 10px 0;
+            padding: 10px;
+            background: #222;
+            border-left: 3px solid #0f0;
+            word-break: break-all;
+        }
+
+        .error {
+            border-left-color: #f00;
+            color: #f00;
+        }
+
+        .success {
+            border-left-color: #0f0;
+            color: #0f0;
+        }
+
+        .warning {
+            border-left-color: #ff0;
+            color: #ff0;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #0f0;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+
+        button:hover {
+            background: #0ff;
+        }
+
+        #logs {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        h2 {
+            color: #0ff;
+        }
+
+        .data {
+            background: #0a0a0a;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #0f0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>🧪 Test JSONBin - JetpackV2</h2>
+
+    <div>
+        <button onclick='testConnection()'>🔗 Verificar Conexión</button>
+        <button onclick='testGetBin()'>🔍 Ver datos crudos</button>
+        <button onclick='testGetRanking()'>📊 Ver Ranking</button>
+        <button onclick='testAddJaramito()'>➕ Agregar JARAMITO (34.234 puntos)</button>
+        <button onclick='clearLogs()'>🗑️ Limpiar Logs</button>
+    </div>
+
+    <div id='logs'></div>
+
+    <script>
+        const JSONBIN_ID = '69c74632c3097a1dd56af6c4';
+        const JSONBIN_KEY = '$2a$10$QkyIOrpMcYH7iLX24ChMqePaN7Eu0GEsEUM7H8T.cWzjLS4/vKU06';
+        const API_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+
+        function addLog(msg, isError = false, isWarning = false) {
+            const div = document.getElementById('logs');
+            const log = document.createElement('div');
+            const className = isError ? 'error' : (isWarning ? 'warning' : 'success');
+            log.className = 'log ' + className;
+            log.textContent = msg;
+            div.appendChild(log);
+            console.log(msg);
+            div.scrollTop = div.scrollHeight;
+        }
+
+        function addData(title, data) {
+            const div = document.getElementById('logs');
+            const log = document.createElement('div');
+            log.className = 'log success data';
+            log.innerHTML = `<strong>${title}:</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            div.appendChild(log);
+            div.scrollTop = div.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function testConnection() {
+            try {
+                addLog('🔗 Testeando conexión a JSONBin...', false, true);
+                addLog(`ID: ${JSONBIN_ID}`, false, true);
+                addLog(`KEY: ${JSONBIN_KEY.substring(0, 20)}...ESCONDIDA`, false, true);
+
+                const response = await fetch(`${API_URL}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+
+                if (!response.ok) {
+                    addLog(`❌ HTTP ${response.status} - ${response.statusText}`, true);
+                    if (response.status === 401) {
+                        addLog('⚠️ API Key rechazada. Verifica que sea correcta en config.js', false, true);
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                addLog('✅ Conexión exitosa! JSONBin responde correctamente.', false);
+
+                if (data.record?.ranking) {
+                    addLog(`📊 Rankings guardados: ${data.record.ranking.length}`, false);
+                } else {
+                    addLog('⚠️ No hay rankings guardados aún', false, true);
+                }
+
+            } catch (err) {
+                addLog('❌ Error: ' + err.message, true);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function testGetBin() {
+            try {
+                addLog('📥 Obteniendo datos crudos de JSONBin...');
+                const response = await fetch(`${API_URL}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+                addData('Respuesta completa', data);
+
+                if (data.record?.ranking) {
+                    addData('Array de ranking', data.record.ranking);
+                }
+            } catch (err) {
+                addLog('❌ Error: ' + err.message, true);
+            }
+        }
+
+        async function testGetRanking() {
+            try {
+                addLog('📥 Obteniendo ranking...');
+                const response = await fetch(`${API_URL}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+                const ranking = data.record?.ranking || [];
+
+                addLog(`✅ Ranking obtenido: ${ranking.length} registros`, false);
+
+                if (ranking.length === 0) {
+                    addLog('⚠️ El ranking está vacío', false, true);
+                    return;
+                }
+
+                ranking.slice(0, 10).forEach((r, i) => {
+                    const nombre = r.nombre || 'sin nombre';
+                    const metros = r.metros || 0;
+                    addLog(`  ${i + 1}. ${nombre} - ${metros}m`);
+                });
+            } catch (err) {
+                addLog('❌ Error: ' + err.message, true);
+            }
+        }
+
+        async function testAddJaramito() {
+            try {
+                addLog('📥 Obteniendo ranking actual...');
+                const response = await fetch(`${API_URL}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+
+                if (!response.ok) {
+                    throw new Error('GET failed: HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+                let ranking = data.record?.ranking || [];
+
+                addLog(`✅ Ranking actual: ${ranking.length} registros`);
+
+                // Buscar JARAMITO
+                const idx = ranking.findIndex(r =>
+                    String(r.nombre || '').toLowerCase() === 'jaramito'
+                );
+
+                if (idx >= 0) {
+                    addLog(`  ✏️ Actualizando: ${ranking[idx].nombre} (${ranking[idx].metros}m → 34234m)`);
+                    ranking[idx].metros = 34234;
+                } else {
+                    addLog(`  ➕ Agregando JARAMITO (nuevo jugador)`);
+                    ranking.push({ nombre: 'JARAMITO', metros: 34234 });
+                }
+
+                // Ordenar
+                ranking.sort((a, b) => Number(b.metros) - Number(a.metros));
+
+                addLog(`📤 Enviando ${ranking.length} registros a JSONBin...`);
+
+                const putResponse = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_KEY
+                    },
+                    body: JSON.stringify({ ranking })
+                });
+
+                if (!putResponse.ok) {
+                    const text = await putResponse.text();
+                    throw new Error(`PUT failed (HTTP ${putResponse.status}): ${text}`);
+                }
+
+                const putData = await putResponse.json();
+                addLog('✅ JARAMITO guardado correctamente!');
+                addData('Respuesta de PUT', putData);
+
+                // Verificar que se guardó
+                setTimeout(() => {
+                    addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    testGetRanking();
+                }, 1000);
+
+            } catch (err) {
+                addLog('❌ Error: ' + err.message, true);
+                addLog('💡 Tip: Abre F12 (Console) para más detalles', false, true);
+            }
+        }
+
+        // Auto test al cargar
+        window.onload = () => {
+            addLog('✓ Página cargada. Click en los botones para testear.');
+            addLog('💡 Usa F12 (Console) para ver más detalles', false, true);
+        };
+    </script>
+</body>
+
+</html>
